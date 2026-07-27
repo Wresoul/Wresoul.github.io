@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daniil — Backend Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0F1419;
+    --bg-alt: #141A21;
+    --surface: #171E27;
+    --border: #262E38;
+    --border-soft: #1D242C;
+    --text: #E7ECF1;
+    --text-dim: #8996A6;
+    --text-faint: #57616E;
+    --amber: #E8A33D;
+    --amber-dim: rgba(232,163,61,0.12);
+    --teal: #5FBFA3;
+    --teal-dim: rgba(95,191,163,0.12);
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --sans: 'Inter', system-ui, sans-serif;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a{ color: inherit; text-decoration: none; }
+
+  ::selection{ background: var(--amber-dim); color: var(--amber); }
+
+  :focus-visible{
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .wrap{
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(15,20,25,0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .nav-inner{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 16px 0;
+  }
+  .nav-brand{
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .nav-brand span{ color: var(--amber); }
+  .nav-links{
+    display:flex;
+    gap: 22px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .nav-links a:hover{ color: var(--text); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding: 64px 0 40px;
+  }
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--teal);
+    margin-bottom: 14px;
+  }
+  .eyebrow::before{ content: "// "; color: var(--text-faint); }
+
+  h1{
+    font-family: var(--mono);
+    font-size: clamp(28px, 5vw, 40px);
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+  h1 .accent{ color: var(--amber); }
+
+  .lede{
+    color: var(--text-dim);
+    font-size: 16px;
+    max-width: 52ch;
+    margin: 0 0 32px;
+  }
+
+  /* ---------- TERMINAL ---------- */
+  .terminal{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5);
+  }
+  .terminal-bar{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+  }
+  .dot{ width:10px; height:10px; border-radius:50%; }
+  .dot.r{ background:#E5636B; }
+  .dot.y{ background:#E8B84B; }
+  .dot.g{ background:#5FBFA3; }
+  .terminal-title{
+    margin-left: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+  .terminal-body{
+    padding: 22px 20px 26px;
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+  .prompt{ color: var(--teal); }
+  .cmd{ color: var(--text); }
+  .out{ color: var(--text-dim); white-space: pre-wrap; }
+  .out .key{ color: var(--text-dim); }
+  .out .str{ color: var(--amber); }
+  .out .bool{ color: var(--teal); }
+  .cursor{
+    display:inline-block;
+    width: 8px;
+    height: 15px;
+    background: var(--amber);
+    vertical-align: -2px;
+    animation: blink 1s step-start infinite;
+  }
+  @keyframes blink{ 50%{ opacity: 0; } }
+
+  /* ---------- SECTIONS ---------- */
+  section.route{ padding: 56px 0; border-top: 1px solid var(--border-soft); }
+
+  .route-head{
+    display:flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+  }
+  .method{
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--teal);
+    background: var(--teal-dim);
+    border: 1px solid rgba(95,191,163,0.3);
+    padding: 3px 9px;
+    border-radius: 4px;
+    letter-spacing: 0.03em;
+  }
+  .path{
+    font-family: var(--mono);
+    font-size: 16px;
+    color: var(--text);
+  }
+  .path .seg-dim{ color: var(--text-faint); }
+
+  /* ---------- CARD ---------- */
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 22px 24px;
+    margin-bottom: 16px;
+    transition: border-color 0.15s ease;
+  }
+  .card:hover{ border-color: #3A4452; }
+  .card:last-child{ margin-bottom: 0; }
+
+  .card-top{
+    display:flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .card-title{
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .status{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--teal);
+    white-space: nowrap;
+    padding-top: 2px;
+  }
+  .status::before{ content: "● "; font-size: 8px; }
+
+  .card-desc{
+    color: var(--text-dim);
+    font-size: 14.5px;
+    margin: 0 0 14px;
+  }
+
+  .tags{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .tag{
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--text-faint);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .card-link{
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--amber);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-link:hover{ text-decoration: underline; }
+  .card-link svg{ width: 12px; height: 12px; }
+
+  /* ---------- CONTACT ---------- */
+  .contact-body{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 22px 24px;
+    font-family: var(--mono);
+    font-size: 14px;
+  }
+  .contact-row{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border-soft);
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .contact-row:last-child{ border-bottom: none; }
+  .contact-key{ color: var(--text-faint); }
+  .contact-val{ color: var(--text); }
+  .contact-val:hover{ color: var(--amber); }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    padding: 40px 0 60px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-faint);
+    border-top: 1px solid var(--border-soft);
+    display:flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  @media (max-width: 560px){
+    .nav-links{ gap: 14px; font-size: 12px; }
+    .terminal-body{ font-size: 12.5px; }
+    .card-top{ flex-direction: column; }
+    .status{ padding-top: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    .cursor{ animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <div class="nav-brand">wresoul<span>.dev</span></div>
+    <div class="nav-links">
+      <a href="#experience">experience</a>
+      <a href="#projects">projects</a>
+      <a href="#contact">contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero wrap">
+  <div class="eyebrow">status: open to work</div>
+  <h1>Daniil — <span class="accent">Backend</span> Developer</h1>
+  <p class="lede">I build APIs and backend services with Python. Comfortable across the request lifecycle — from database schema to the response your frontend actually renders.</p>
+
+  <div class="terminal">
+    <div class="terminal-bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="terminal-title">daniil@backend — zsh</span>
+    </div>
+    <div class="terminal-body">
+      <div><span class="prompt">$</span> <span class="cmd">whoami</span></div>
+      <div class="out">Daniil Radin, backend developer</div>
+      <div>&nbsp;</div>
+      <div><span class="prompt">$</span> <span class="cmd">cat stack.json</span></div>
+      <div class="out">{
+  <span class="key">"languages"</span>: [<span class="str">"Python"</span>],
+  <span class="key">"frameworks"</span>: [<span class="str">"FastAPI"</span>, <span class="str">"Django"</span>],
+  <span class="key">"database"</span>: <span class="str">"PostgreSQL"</span>,
+  <span class="key">"open_to_work"</span>: <span class="bool">true</span>
+}<span class="cursor"></span></div>
+    </div>
+  </div>
+</header>
+
+<section class="route" id="experience">
+  <div class="wrap">
+    <div class="route-head">
+      <span class="method">GET</span>
+      <span class="path">/experience</span>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <span class="card-title">CheckOffice — Backend Developer</span>
+        <span class="status">200 OK</span>
+      </div>
+      <p class="card-desc">Worked on the backend of a SaaS platform for automating business audits — digital checklists, inspection tracking, and violation reporting used across retail, HoReCa, and logistics.</p>
+      <div class="tags">
+        <span class="tag">Python</span>
+        <span class="tag">Django</span>
+        <span class="tag">PostgreSQL</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="route" id="projects">
+  <div class="wrap">
+    <div class="route-head">
+      <span class="method">GET</span>
+      <span class="path">/projects</span>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <span class="card-title"><span class="seg-dim">/</span>bot-googleforms</span>
+        <span class="status">200 OK</span>
+      </div>
+      <p class="card-desc">A bot that automates filling out Google Forms — submits responses on a schedule or in bulk instead of doing it by hand.</p>
+      <div class="tags"><span class="tag">Python</span></div>
+      <a class="card-link" href="https://github.com/Wresoul/Bot_googlefroms" target="_blank" rel="noopener">
+        View source
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>
+      </a>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <span class="card-title"><span class="seg-dim">/</span>online-cinema</span>
+        <span class="status">200 OK</span>
+      </div>
+      <p class="card-desc">An online cinema platform — browsing, playback, and content management built on a Python backend.</p>
+      <div class="tags"><span class="tag">Python</span></div>
+      <a class="card-link" href="https://github.com/Wresoul/Online_cinema" target="_blank" rel="noopener">
+        View source
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>
+      </a>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <span class="card-title"><span class="seg-dim">/</span>shop-clothes</span>
+        <span class="status">200 OK</span>
+      </div>
+      <p class="card-desc">A clothing e-commerce store — product catalog, cart, and order handling on a Python backend.</p>
+      <div class="tags"><span class="tag">Python</span></div>
+      <a class="card-link" href="https://github.com/Wresoul/Shop_clothes" target="_blank" rel="noopener">
+        View source
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="route" id="contact">
+  <div class="wrap">
+    <div class="route-head">
+      <span class="method">GET</span>
+      <span class="path">/contact</span>
+    </div>
+
+    <div class="contact-body">
+      <div class="contact-row">
+        <span class="contact-key">"github"</span>
+        <a class="contact-val" href="https://github.com/Wresoul" target="_blank" rel="noopener">github.com/Wresoul</a>
+      </div>
+      <div class="contact-row">
+        <span class="contact-key">"telegram"</span>
+        <a class="contact-val" href="https://t.me/popriternak" target="_blank" rel="noopener">@popriternak</a>
+      </div>
+      <div class="contact-row">
+        <span class="contact-key">"x"</span>
+        <a class="contact-val" href="https://x.com/Wresoul" target="_blank" rel="noopener">@Wresoul</a>
+      </div>
+      <div class="contact-row">
+        <span class="contact-key">"habr"</span>
+        <a class="contact-val" href="https://habr.com/ru/users/Wresoul/" target="_blank" rel="noopener">habr.com/Wresoul</a>
+      </div>
+      <div class="contact-row">
+        <span class="contact-key">"leetcode"</span>
+        <a class="contact-val" href="https://leetcode.com/u/Wresoul/" target="_blank" rel="noopener">leetcode.com/Wresoul</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <span>$ exit</span>
+  <span>built with Python in mind</span>
+</footer>
+
+</body>
+</html>
